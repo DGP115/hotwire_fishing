@@ -1,0 +1,7 @@
+<%= turbo_stream.replace dom_id(@bait) do %>
+  <%= render partial: 'baits/bait', locals: { bait: @bait } %>
+<% end %>
+
+<%= turbo_stream.update "tackle_box_items_count" do %>
+  <%= current_user.tackle_box_items.size %>
+<% end %>
