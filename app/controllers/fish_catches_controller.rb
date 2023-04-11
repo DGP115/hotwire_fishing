@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+#  Fish Catches Controller
 class FishCatchesController < ApplicationController
   before_action :require_signin
   before_action :set_fish_catch, only: %i[show edit update destroy]
@@ -11,11 +14,9 @@ class FishCatchesController < ApplicationController
     @species = FishCatch::SPECIES
   end
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @fish_catch.update(fish_catch_params)
@@ -29,7 +30,11 @@ class FishCatchesController < ApplicationController
     @fish_catch = current_user.fish_catches.new(fish_catch_params)
 
     if @fish_catch.save
-      redirect_to tackle_box_item_for_catch(@fish_catch)
+      # redirect_to tackle_box_item_for_catch(@fish_catch)
+      # update fish_catches, since we are going to be re-rendering this collection
+      @fish_catches = fish_catches_for_bait(@fish_catch.bait)
+      @new_catch = current_user.fish_catches
+                               .new(bait: @fish_catch.bait)
     else
       render :new, status: :unprocessable_entity
     end
@@ -38,10 +43,17 @@ class FishCatchesController < ApplicationController
   def destroy
     @fish_catch.destroy
 
-    redirect_to tackle_box_item_for_catch(@fish_catch)
+    # update fish_catches, since we are going to be re-rendering this collection
+    @fish_catches = fish_catches_for_bait(@fish_catch.bait)
+
+    # Normally, a flash message is displayed on the next rendering of whatever
+    # layout the flash partial is in.  When using Turbo, the full page is not being
+    # refreshed, so we want to render the flash message on this cycle.
+    # So, we use flash.now.
+    flash.now[:notice] = 'The catch was successfully deleted.'
   end
 
-private
+  private
 
   def set_fish_catch
     @fish_catch = current_user.fish_catches.find(params[:id])

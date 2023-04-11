@@ -1,0 +1,10 @@
+<%= turbo_stream.prepend "fish_catches_list" do %>
+  <%= render partial: "fish_catches/fish_catch",
+             locals: { fish_catch: @fish_catch } %>
+<% end %>
+
+<%= turbo_stream.replace "fish_catches_form" do %>
+  <%= render partial: "fish_catches/form",
+             locals: { fish_catch: @new_catch } %>
+<% end %>
+
