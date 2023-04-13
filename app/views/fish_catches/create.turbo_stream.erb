@@ -8,3 +8,10 @@
              locals: { fish_catch: @new_catch } %>
 <% end %>
 
+<%= turbo_stream.update "tackle_box_stats" do %>
+  <%= render partial: "tackle_box_items/stats",
+             locals: { fish_catches: @fish_catches } %>
+<% end %>
+
+<%= update_flash_messages %>
+

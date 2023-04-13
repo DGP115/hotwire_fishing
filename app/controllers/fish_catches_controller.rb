@@ -20,7 +20,9 @@ class FishCatchesController < ApplicationController
 
   def update
     if @fish_catch.update(fish_catch_params)
-      redirect_to tackle_box_item_for_catch(@fish_catch)
+      @fish_catches = fish_catches_for_bait(@fish_catch.bait)
+      flash.now[:notice] = 'The catch was successfully updated.'
+      # redirect_to tackle_box_item_for_catch(@fish_catch)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -29,14 +31,27 @@ class FishCatchesController < ApplicationController
   def create
     @fish_catch = current_user.fish_catches.new(fish_catch_params)
 
+
     if @fish_catch.save
+      # Normally, a flash message is displayed on the next rendering of whatever
+      # layout the flash partial is in.  When using Turbo, the full page is not being
+      # refreshed, so we want to render the flash message on this cycle.
+      # So, we use flash.now.
+      flash.now[:notice] = 'The catch was successfully created.'
+
       # redirect_to tackle_box_item_for_catch(@fish_catch)
       # update fish_catches, since we are going to be re-rendering this collection
       @fish_catches = fish_catches_for_bait(@fish_catch.bait)
       @new_catch = current_user.fish_catches
                                .new(bait: @fish_catch.bait)
     else
-      render :new, status: :unprocessable_entity
+      # A "common" solution here is the following, with renders the new form as a separate page
+      # render :new, status: :unprocessable_entity
+      # But, we want to render a form on the current page.
+      # Note:  that form is wrapped in a turbo_frame_tag
+      render 'fish_catches/new',
+             locals: { fish_catch: @fish_catch },
+             status: :unprocessable_entity
     end
   end
 

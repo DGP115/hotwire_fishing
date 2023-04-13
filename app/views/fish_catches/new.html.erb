@@ -1,3 +1,5 @@
 <h2>New Fish Catch</h2>
 
-<%= render "form", fish_catch: @fish_catch %>
+<%= turbo_frame_tag "fish_catches_form" do %>
+  <%= render "form", fish_catch: @fish_catch %>
+<% end %>

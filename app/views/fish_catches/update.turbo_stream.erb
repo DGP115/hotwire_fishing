@@ -1,8 +1,11 @@
-<%= turbo_stream.remove dom_id(@fish_catch) %>
-
 <%= turbo_stream.update "tackle_box_stats" do %>
   <%= render partial: "tackle_box_items/stats",
              locals: { fish_catches: @fish_catches } %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@fish_catch) do %>
+  <%= render partial: "fish_catches/fish_catch",
+             locals: { fish_catch: @fish_catch } %>
 <% end %>
 
 <%= update_flash_messages %>
