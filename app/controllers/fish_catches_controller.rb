@@ -8,10 +8,14 @@ class FishCatchesController < ApplicationController
   def index
     @pagy, @fish_catches =
       pagy(current_user.filter_catches(params),
-           items: params[:per_page] ||= 5)
+           items: params[:per_page] ||= 5,
+           link_extra: 'data-turbo-action="advance"')
 
     @bait_names = Bait.pluck(:name)
     @species = FishCatch::SPECIES
+
+    @min_weight = current_user.min_catch_weight
+    @max_weight = current_user.max_catch_weight
   end
 
   def show; end

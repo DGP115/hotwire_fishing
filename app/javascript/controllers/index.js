@@ -7,5 +7,17 @@ import { application } from "./application"
 import BaitsFilterFormController from "./baits_filter_form_controller"
 application.register("baits-filter-form", BaitsFilterFormController)
 
+import CatchesFilterFormController from "./catches_filter_form_controller"
+application.register("catches-filter-form", CatchesFilterFormController)
+
+import FlashMessageDisplayController from "./flash_message_display_controller"
+application.register("flash-message-display", FlashMessageDisplayController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import RangeSliderController from "./range_slider_controller"
+application.register("range-slider", RangeSliderController)
+
+import SortLinkController from "./sort_link_controller"
+application.register("sort-link", SortLinkController)

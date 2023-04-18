@@ -1,75 +1,110 @@
-<div class="filter">
-  <%= form_with(url: fish_catches_path, method: :get) do |f| %>
-    <div class="row-1">
-      <div>
-        <%= f.select :bait, @bait_names,
-            include_blank: "Any Bait", selected: params[:bait] %>
-      </div>
-      <div>
-        <%= f.select :species, @species,
-            include_blank: "Any Species", selected: params[:species] %>
+<div data-controller="sort-link">
+  <div class="filter">
+    <%= form_with(url: fish_catches_path,
+                  method: :get,
+                  data: { turbo_frame: "fish_catches_list",
+                          turbo_action: "advance",
+                          controller: "catches-filter-form",
+                          action: "input->catches-filter-form#submit"}
+                  ) do |f| %>
+      <div class="row-1">
+        <div>
+          <%= f.select :bait, @bait_names,
+              include_blank: "Any Bait", selected: params[:bait] %>
+        </div>
+        <div>
+          <%= f.select :species, @species,
+              include_blank: "Any Species", selected: params[:species] %>
+        </div>
+
+        <%= f.hidden_field :sort, value: params[:sort],
+                                  data: { sort_link_target: "sort" } %>
+        <%= f.hidden_field :direction, value: params[:direction],
+                                       data: { sort_link_target: "direction" } %>
+
+        <!--Add a slider to allow use to filter fish catches by a min and max weight -->
+        <!-- In this div that wraps the min and max fields and the slider, connect
+             the stimulus controller to the DOM with 'data-controller=' -->
+        <div class="weight"
+            data-controller="range-slider"
+            data-range-slider-min-value="<%=@min_weight%>"
+            data-range-slider-max-value="<%=@max_weight%>">
+
+            <!--Set a stimulus target to "house" the slider -->
+            <div data-range-slider-target="slider">
+            </div>
+
+            <div class="flex">
+              <%= f.hidden_field :min_weight, value: params[:min_weight] || @min_weight,
+                                              data: { range_slider_target: "currentMinWeight" } %>
+              <%= f.hidden_field :max_weight, value: params[:max_weight] || @max_weight,
+                                              data: { range_slider_target: "currentMaxWeight" } %>
+            </div>
+
+            <div class="label">
+              Weight
+            </div>
+
+          </div>
+
       </div>
 
-      <%= f.hidden_field :sort, value: params[:sort] %>
-      <%= f.hidden_field :direction, value: params[:direction] %>
-
-      <div>
-        <%= f.submit "Filter" %>
-      </div>
-    </div>
-    <div class="row-2">
-      Show
-      <%= f.select :per_page,
-            options_for_select([5, 10, 25, 50, 100],
-            selected: params[:per_page]) %>
-    </div>
-  <% end %>
-</div>
-
-<% if @fish_catches.any? %>
-  <div class="fish-catches">
-    <table>
-      <thead>
-        <tr>
-          <th class="bait">
-            <%= sort_link_to "Bait", "bait" %>
-          </th>
-          <th class="species">
-            <%= sort_link_to "Species", "species" %>
-          </th>
-          <th class="weight">
-            <%= sort_link_to "Weight", "weight" %>
-          </th>
-          <th class="length">
-            <%= sort_link_to "Length", "length" %>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @fish_catches.each do |fish_catch| %>
-          <tr>
-            <td class="bait">
-              <%= fish_catch.bait.name %>
-            </td>
-            <td class="species">
-              <%= fish_catch.species %>
-            </td>
-            <td class="weight">
-              <%= fish_catch.weight %> lbs
-            </td>
-            <td class="length">
-              <%= fish_catch.length %> in
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @pagy.pages > 1 %>
-      <div class="footer">
-        <%== pagy_nav(@pagy) %>
+      <div class="row-2">
+        Show
+        <%= f.select :per_page,
+              options_for_select([5, 10, 25, 50, 100],
+              selected: params[:per_page]) %>
       </div>
     <% end %>
   </div>
-<% else %>
-  <%= render "no_catches" %>
-<% end %>
+
+  <%= turbo_frame_tag "fish_catches_list" do %>
+    <% if @fish_catches.any? %>
+      <div class="fish-catches">
+        <table>
+          <thead>
+            <tr>
+              <th class="bait">
+                <%= sort_link_to "Bait", "bait" %>
+              </th>
+              <th class="species">
+                <%= sort_link_to "Species", "species" %>
+              </th>
+              <th class="weight">
+                <%= sort_link_to "Weight", "weight" %>
+              </th>
+              <th class="length">
+                <%= sort_link_to "Length", "length" %>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @fish_catches.each do |fish_catch| %>
+              <tr>
+                <td class="bait">
+                  <%= fish_catch.bait.name %>
+                </td>
+                <td class="species">
+                  <%= fish_catch.species %>
+                </td>
+                <td class="weight">
+                  <%= fish_catch.weight %> lbs
+                </td>
+                <td class="length">
+                  <%= fish_catch.length %> in
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <% if @pagy.pages > 1 %>
+          <div class="footer">
+            <%== pagy_nav(@pagy) %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <%= render "no_catches" %>
+    <% end %>
+  <% end %>
+</div>
