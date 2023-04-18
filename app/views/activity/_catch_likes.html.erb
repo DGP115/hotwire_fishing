@@ -1,11 +1,19 @@
-<% if like = fish_catch.my_like %>
-  <%= button_to fish_catch_like_path(fish_catch, like), method: :delete do %>
-    <%= image_tag("full-heart.svg") %>
-    <%= fish_catch.likes_count %>
-  <% end %>
-<% else %>
-  <%= button_to fish_catch_likes_path(fish_catch) do %>
-    <%= image_tag("empty-heart.svg") %>
-    <%= fish_catch.likes_count %>
+<%= turbo_frame_tag "#{dom_id(fish_catch)}_likes" do %>
+  <% like = fish_catch.my_like %>
+  <% if !like.nil? %>
+    <%= button_to fish_catch_like_path(fish_catch, like), method: :delete do %>
+      <%= image_tag("full-heart.svg") %>
+      <div id="<%=dom_id(fish_catch)%>_likes_count">
+        <%= fish_catch.likes_count %>
+      </div>
+    <% end %>
+  <% else %>
+    <%= button_to fish_catch_likes_path(fish_catch) do %>
+      <%= image_tag("empty-heart.svg") %>
+      <div id="<%=dom_id(fish_catch)%>_likes_count">
+        <%= fish_catch.likes_count %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>
+

@@ -1,4 +1,6 @@
+<%= turbo_stream_from "catches_activity" %>
 
+<div id="catches">
   <%= turbo_frame_tag "catches_page_#{@pagy.page}" do %>
     <%= render collection: @fish_catches,
               partial: "activity/fish_catch" %>
@@ -11,4 +13,5 @@
       <% end %>
     <% end %>
   <% end %>
+</div>
 
